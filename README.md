@@ -1,6 +1,6 @@
-# Ekino Code Gems
+# Ekino Gems
 
-Welcome to **Ekino Code Gems**, the repository that contains all the coding styles, best practices, and guidelines followed at Ekino. This repository is a treasure trove of valuable coding standards that ensure consistency, maintainability, and high quality across all our projects.
+Welcome to **Ekino Gems**, the repository that contains all the coding styles, best practices, and guidelines followed at Ekino. This repository is a treasure trove of valuable coding standards that ensure consistency, maintainability, and high quality across all our projects.
 
 At Ekino, we strive to maintain the highest standards in our codebases. This repository provides comprehensive checklists of coding styles and best practices to help our developers write clean, efficient, and maintainable code.
 
@@ -17,7 +17,7 @@ At Ekino, we strive to maintain the highest standards in our codebases. This rep
 - [Tools and Linters](tools-linters/README.md)
 
 ## Contributing
-We welcome contributions to **Ekino Code Gems**. Please read our [Contribution Guide](CONTRIBUTING.md) for details on how to contribute.
+We welcome contributions to **Ekino Gems**. Please read our [Contribution Guide](CONTRIBUTING.md) for details on how to contribute.
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
