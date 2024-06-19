@@ -1,5 +1,7 @@
 # Ekino Gems
 
+![image](https://github.com/ekino/gems/assets/1331451/f7aef00e-f722-44eb-b211-cd9ce6ac2657)
+
 Welcome to **Ekino Gems**, the repository that contains all the coding styles, best practices, and guidelines followed at Ekino. This repository is a treasure trove of valuable coding standards that ensure consistency, maintainability, and high quality across all our projects.
 
 At Ekino, we strive to maintain the highest standards in our codebases. This repository provides comprehensive checklists of coding styles and best practices to help our developers write clean, efficient, and maintainable code.
