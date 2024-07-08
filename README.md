@@ -1,4 +1,4 @@
-# Ekino Gems
+# 💎 Ekino Gems
 
 ![image](https://github.com/ekino/gems/assets/1331451/f7aef00e-f722-44eb-b211-cd9ce6ac2657)
 
