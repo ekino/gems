@@ -19,7 +19,7 @@ At Ekino, we strive to maintain the highest standards in our codebases. This rep
 - [Tools and Linters](tools-linters/README.md)
 
 ## Contributing
-We welcome contributions to **Ekino Gems**. Please read our [Contribution Guide](CONTRIBUTING.md) for details on how to contribute.
+We welcome contributions to **Ekino Gems**. Please read our [Contribution Guide]([CONTRIBUTING.md](https://github.com/ekino/gems/wiki/Contribution-Guide)) for details on how to contribute.
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
