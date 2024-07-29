@@ -73,8 +73,6 @@ When you have doubts, you can refer to MDN or HTML specification documentation:
 
 - Include external scripts and stylesheets using `<link>` for CSS and `<script>` for JavaScript, placed appropriately.
 
-## Valid HTML
+## Validate HTML & Heading
 
 - Ensure the HTML is valid by using a validator such as the [W3C Markup Validation Service](https://validator.w3.org/) or [NU Validator](https://validator.w3.org/nu/).
-
-By following these checklists, we can ensure that the web application is both accessible to all users and compliant with web standards, improving its overall quality and user experience.
