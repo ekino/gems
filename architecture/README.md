@@ -3,7 +3,7 @@
 **Final Architecture: HOFA Architecture**
  
 HOFA architecture represents the combination of Hexagonal architecture, Onion architecture, Feature-sliced design, and Atomic Design. This combined approach leverages the strengths of each methodology to create a robust, modular, and maintainable software architecture.
-Merge patterns and maximize profits
+
 Here's an example of how you might organize your frontend project folders according to the HOFA architecture:
 
 ```plaintext
@@ -14,10 +14,11 @@ frontend-project/
 │   ├── common/                # Common components and utilities across features
 │   │   ├── components/        # Reusable UI components based on Atomic Design
 │   │   ├── utilities/         # Common utilities and helper functions
+│   │   ├── configurations/    # Common configurations
 │   │   └── ...
 │   │
 │   ├── features/              # Feature-based folder structure
-│   │   ├── auth/              # Authentication feature
+│   │   ├── auth/              # Authentication feature (login, logout, create account, ...)
 │   │   │   ├── components/    # Feature-specific UI components (atoms, molecules, organisms)
 │   │   │   ├── pages/         # Feature-specific stateful components (connected to Redux)
 │   │   │   ├── services/      # Feature-specific services (API calls, state management, etc.)
@@ -29,7 +30,7 @@ frontend-project/
 │   │   │   ├── services/
 │   │   │   └── state/
 │   │   │
-│   │   ├── settings/          # Settings feature
+│   │   ├── faq/               # FAQ feature
 │   │   │   ├── components/
 │   │   │   ├── pages/
 │   │   │   ├── services/
@@ -37,17 +38,13 @@ frontend-project/
 │   │   │
 │   │   └── ...                # Other features
 │   │
-│   ├── infrastructure/        # External services, utilities, and adapters
+│   ├── infrastructure/        # External services, utilities, and adapters (facade)
 │   │   ├── api/               # API communication services
 │   │   ├── state/             # Global state management setup (Redux, Context, etc.)
 │   │   ├── logging/           # Error logging and monitoring
+│   │   ├── navigation/        # Navigation helper: url params parser, pathname parser, ...
+│   │   ├── providers/         # Providers: theme, queries, ...
 │   │   └── ...                # Other infrastructure concerns
-│   │
-│   ├── application/           # Application services and use cases
-│   │   ├── auth/              # Authentication use cases and services
-│   │   ├── dashboard/         # Dashboard use cases and services
-│   │   ├── settings/          # Settings use cases and services
-│   │   └── ...                # Other application services
 │   │
 │   └── App.jsx                # Main application component (connects to Redux, manages routing)
 │
@@ -63,6 +60,7 @@ frontend-project/
 - common/
   - components/: Reusable UI components based on Atomic Design principles (atoms, molecules, organisms).
   - utilities/: Common utility functions and helper methods used throughout the application.
+  - configurations/: Common configurations (terms and wording, urls, paths, ...).
 - features/
   - auth/
     - components/: Specific UI components related to authentication.
@@ -84,12 +82,6 @@ frontend-project/
 **src/infrastructure/**
   - api/: Services and utilities for API communication.
   - state/: Setup and configuration for global state management (Redux, Context API).
-
-**src/application/**
-  - auth/: Application services and use cases specific to authentication.
-  - dashboard/: Application services and use cases specific to the dashboard.
-  - settings/: Application services and use cases specific to settings.
-  - ... (Other application services organized similarly)
 
 **App.jsx**
   - Main application component responsible for:
