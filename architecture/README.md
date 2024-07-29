@@ -72,11 +72,11 @@ frontend-project/
     - pages/: Stateful components for the dashboard feature.
     - services/: Services related to the dashboard feature.
     - state/: State management for the dashboard feature.
-  - settings/
-    - components/: UI components specific to the settings feature.
-    - pages/: Stateful components for the settings feature.
-    - services/: Services related to the settings feature.
-    - state/: State management for the settings feature.
+  - faq/
+    - components/: UI components specific to the faq feature.
+    - pages/: Stateful components for the faq feature.
+    - services/: Services related to the faq feature.
+    - state/: State management for the faq feature.
   - ... (Other features follow a similar structure)
 
 **src/infrastructure/**
@@ -86,8 +86,8 @@ frontend-project/
 **App.jsx**
   - Main application component responsible for:
     - Connecting to global state management (Redux, Context API).
-    - Managing application routing and navigation.
-    - Rendering feature-specific pages and components.
+    - Connecting to global theme providers.
+    - Connecting to other global providers.
  
 ![HOFA Architecture](hofa-archi.png)
 Figure 4-8. Simplified HOFA architecture (using Redux and Saga)
