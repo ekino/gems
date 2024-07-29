@@ -2,7 +2,9 @@
 
 **Final Architecture: HOFA Architecture**
  
-HOFA architecture represents the combination of Hexagonal architecture, Onion architecture, Feature-sliced design, and Atomic Design. This combined approach leverages the strengths of each methodology to create a robust, modular, and maintainable software architecture.
+HOFA architecture represents the combination of Hexagonal architecture, Onion architecture, Feature-sliced design, and Atomic Design. 
+
+This combined approach leverages the strengths of each methodology to create a robust, modular, and maintainable software architecture.
 
 Here's an example of how you might organize your frontend project folders according to the HOFA architecture:
 
@@ -10,85 +12,92 @@ Here's an example of how you might organize your frontend project folders accord
 frontend-project/
 │
 ├── src/
-│   ├── assets/                # Static assets like images, fonts, etc.
-│   ├── common/                # Common components and utilities across features
-│   │   ├── components/        # Reusable UI components based on Atomic Design
-│   │   ├── utilities/         # Common utilities and helper functions
-│   │   ├── configurations/    # Common configurations
-│   │   └── ...
+│   ├── assets/             # Static assets (images, fonts, etc.)
+│   ├── common/             # Shared resources
+│   │   ├── components/     # Reusable UI components (Atomic Design)
+│   │   │   ├── atoms/      # Basic building blocks (buttons, inputs, labels)
+│   │   │   ├── molecules/  # Small component groups (forms, search bars)
+│   │   │   ├── organisms/  # Complex UI sections (headers, navigation)
+│   │   │   └── templates/  # Page-level layouts
+│   │   ├── hooks/          # Custom React hooks
+│   │   ├── utils/          # Helper functions, constants, etc.
+│   │   └── config/         # Configuration files
 │   │
-│   ├── features/              # Feature-based folder structure
-│   │   ├── auth/              # Authentication feature (login, logout, create account, ...)
-│   │   │   ├── components/    # Feature-specific UI components (atoms, molecules, organisms)
-│   │   │   ├── pages/         # Feature-specific stateful components (connected to Redux)
-│   │   │   ├── services/      # Feature-specific services (API calls, state management, etc.)
-│   │   │   └── state/         # Feature-specific state management (Redux slices, Context, etc.)
-│   │   │
-│   │   ├── dashboard/         # Dashboard feature
+│   ├── features/          # Core application features
+│   │   ├── auth/
+│   │   │   ├── api/       # API request functions (using adapters)
+│   │   │   ├── components/ 
+│   │   │   ├── pages/     
+│   │   │   └── state/      # Feature-specific state logic (using adapters and/or providers)
+│   │   │   └── index.js    # Export the feature's public API (components, hooks, etc.)
+│   │   ├── dashboard/
+│   │   │   ├── api/
 │   │   │   ├── components/
 │   │   │   ├── pages/
-│   │   │   ├── services/
 │   │   │   └── state/
-│   │   │
-│   │   ├── faq/               # FAQ feature
-│   │   │   ├── components/
-│   │   │   ├── pages/
-│   │   │   ├── services/
-│   │   │   └── state/
-│   │   │
-│   │   └── ...                # Other features
+│   │   │   └── index.js
+│   │   │ 
+│   │   └── ...           # Other features
 │   │
-│   ├── infrastructure/        # External services, utilities, and adapters (facade)
-│   │   ├── api/               # API communication services
-│   │   ├── state/             # Global state management setup (Redux, Context, etc.)
-│   │   ├── logging/           # Error logging and monitoring
-│   │   ├── navigation/        # Navigation helper: url params parser, pathname parser, ...
-│   │   ├── providers/         # Providers: theme, queries, ...
-│   │   └── ...                # Other infrastructure concerns
+│   ├── infrastructure/     # External dependencies and adapters
+│   │   ├── adapters/      
+│   │   │   ├── api/        # API adapters (e.g., fetch, axios)
+│   │   │   ├── storage/    # LocalStorage adapter
+│   │   │   ├── state/      # State management adapters (e.g., for Zustand, Redux)
+│   │   │   └── navigation/ # Navigation/routing adapter
+│   │   ├── logging/        # Error tracking and logging services
+│   │   ├── providers/
+│   │   │   ├── ThemeProvider.jsx   # Global theme context
+│   │   │   ├── StateProvider.jsx   # Global state context 
+│   │   │   └── ... 
+│   │   └── config.js      # Global configuration (API base URL, etc.)
 │   │
-│   └── App.jsx                # Main application component (connects to Redux, manages routing)
+│   └── App.jsx           # Main application component (routing, state management setup)
 │
-├── public/                    # Static assets, index.html, etc.
-├── .gitignore                 # Git ignore file
-├── package.json               # Project dependencies and scripts
-└── README.md                  # Project documentation
+├── public/               # Static assets served directly (index.html, favicon, etc.)
+├── .gitignore
+├── package.json
+└── README.md
 ```
- 
- 
-**src/**
-- assets/: Contains static assets such as images, fonts, etc., used across the application.
-- common/
-  - components/: Reusable UI components based on Atomic Design principles (atoms, molecules, organisms).
-  - utilities/: Common utility functions and helper methods used throughout the application.
-  - configurations/: Common configurations (terms and wording, urls, paths, ...).
-- features/
-  - auth/
-    - components/: Specific UI components related to authentication.
-    - pages/: Stateful components connected to Redux or other state management (containers).
-    - services/: Feature-specific services (API calls, business logic).
-    - state/: Feature-specific state management (Redux slices, Context API).
-  - dashboard/
-    - components/: UI components specific to the dashboard feature.
-    - pages/: Stateful components for the dashboard feature.
-    - services/: Services related to the dashboard feature.
-    - state/: State management for the dashboard feature.
-  - faq/
-    - components/: UI components specific to the faq feature.
-    - pages/: Stateful components for the faq feature.
-    - services/: Services related to the faq feature.
-    - state/: State management for the faq feature.
-  - ... (Other features follow a similar structure)
 
-**src/infrastructure/**
-  - api/: Services and utilities for API communication.
-  - state/: Setup and configuration for global state management (Redux, Context API).
+**Project Root**
+- **public/**: Contains static assets like index.html, favicon, robots.txt, etc., that are served directly to the browser.
+- **.gitignore**: Specifies files and directories that Git should ignore.
+- **package.json**: Lists project dependencies, scripts, and other metadata.
+- **README.md**: Provides project documentation, including installation instructions, usage examples, and architecture overview.
 
-**App.jsx**
-  - Main application component responsible for:
-    - Connecting to global state management (Redux, Context API).
-    - Connecting to global theme providers.
-    - Connecting to other global providers.
- 
+**src/ Directory**
+- **assets/**: Stores static assets used in the application (e.g., images, fonts, icons, videos).
+- **common/**: Houses reusable components and utilities shared across features.
+- **components/**: Organized using Atomic Design principles, provides a library of UI components:
+    - **atoms/**: Fundamental building blocks like buttons, inputs, and labels.
+    - **molecules/**: Combinations of atoms that form simple UI components (e.g., search bars, form fields).
+    - **organisms/**: More complex components composed of molecules and atoms (e.g., headers, navigation menus).
+    - **templates/**: Page-level layouts or structures composed of organisms and molecules.
+- **hooks/**: Custom React hooks for handling common UI logic, data fetching, state management, etc.
+- **utils/**: Helper functions for tasks like formatting, validation, etc.
+- **config/**: Configuration files for environment-specific variables, API endpoints, etc.
+- **features/**: Represents the core of the application, organized by distinct business capabilities.
+    - **Feature Folders (e.g., auth/, dashboard/, faq/)**:
+        - **api/**: Contains functions for making API calls specific to the feature, utilizing adapters from the infrastructure layer.
+        - **components/**: UI components specific to the feature, built using atomic components and molecules.
+        - **pages/**: Main pages or views of the feature, often connected to state management and API calls.
+        - **state/**: Manages the feature's internal state using React hooks, context, and adapters.
+- **infrastructure/**: Provides the technical implementation details for interacting with external systems.
+    - **adapters/**:
+        - **api/**: Adapters for different HTTP clients or libraries to handle API communication.
+        - **storage/**: Adapters for managing data in localStorage or other storage mechanisms.
+        - **state/**: Adapters for interacting with different state management libraries (e.g., Zustand, Redux).
+        - **navigation/**: Adapters for handling navigation and routing (e.g., react-router).
+        - **logging/**: Services for error logging, reporting, and monitoring.
+- **providers/**: Global context providers:
+    - **ThemeProvider.jsx**: Provides styling and theme-related values to the entire app.
+    - **StateProvider.jsx**: Manages global application state (if needed).
+- **App.jsx**: The main application component. It:
+    - Sets up global providers (ThemeProvider, StateProvider).
+    - Handles routing using a navigation adapter (e.g., from react-router).
+    - Renders the layout and the content based on the current route.
+
 ![HOFA Architecture](hofa-archi.png)
 Figure 4-8. Simplified HOFA architecture (using Redux and Saga)
 
