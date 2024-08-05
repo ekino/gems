@@ -29,12 +29,12 @@
 
 ### Local tools
 
-- Axe DevTools
-- Lighthouse DevTools
+- [Axe devtools](https://www.deque.com/axe/devtools/)
+- [Lighthouse DevTools](https://developer.chrome.com/docs/lighthouse)
 
 ### Online tools
 
-- V6y
+- [V6y](https://github.com/ekino/v6y)
 
 ## Ressources
 
