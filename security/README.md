@@ -26,45 +26,6 @@
 - The use of these React capabilities is prohibited: `findDOMNode`, `createElement`, `createFactory`, and `cloneElement`.
 - React capabilities `useRef` and `createRef` should not be used with innerHtml or outerHtml.
 
-## Angular
-
-- TODO
-
-## Env
-
-### Tools environment
-
-_Files workspace_
-
-- env files
-- config files
-- docker files
-- ...
-
-_Verify the absence these words_
-
-- key
-- password
-- secret
-- root
-- admin
-- jwt
-- token
-- apitoken
-
-_Recommandation_
-
-- vault
-- Gitlab variables
-- Politique de développement sécurisé
-
-### Version
-
-- Socle verification: dependencies (dev and prod)
-- Checking for non-recommended packages [checklist-dark-dependencies.json](https://github.com/ekino/bistro/checklist-dark-dependencies.json)
-- Verify if dependencies have security issues : Renovate
-
-
 ## Resources
 
 For further reading and resources on web security, refer to:
