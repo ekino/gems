@@ -26,6 +26,13 @@
 - The use of these React capabilities is prohibited: `findDOMNode`, `createElement`, `createFactory`, and `cloneElement`.
 - React capabilities `useRef` and `createRef` should not be used with innerHtml or outerHtml.
 
+## Angular
+- The use of Angular's `bypassSecurityTrustHtml`, `bypassSecurityTrustStyle`, `bypassSecurityTrustScript`, `bypassSecurityTrustUrl`, and `bypassSecurityTrustResourceUrl` should be limited to the most essential use cases and should be paired with robust input validation and sanitization processes to avoid security risks.
+- Avoid direct DOM manipulation using `ElementRef`, `Renderer2`, or `document`. If manipulation is necessary, ensure that the data being manipulated is safe and sanitized.
+- Use Angular's built-in sanitization methods, such as `DomSanitizer`, when working with user-generated content. This ensures that inputs are sanitized before they are used within the application.
+- Enable `Ahead-Of-Time` (AOT) compilation in Angular to reduce the risk of injection attacks by catching template errors during the build phase and optimizing the code for better security and performance.
+- Regularly update Angular and its dependencies to the latest versions to benefit from security patches and updates provided by the Angular team.
+
 ## Resources
 
 For further reading and resources on web security, refer to:
@@ -39,6 +46,7 @@ For further reading and resources on web security, refer to:
 - [deepscan Rules](https://deepscan.io/rules/)
 - [bearer Rules](https://docs.bearer.com/reference/rules/?lang-jsts=javascript)
 - [CWE Top 25 Most Dangerous Software Weaknesses](https://cwe.mitre.org/top25/archive/2023/2023_top25_list.html)
+- [Angular - Security Best Practices](https://angular.dev/best-practices/security#content-security-policy)
 
 Additionally, recommended books:
 - [Security for Web Developers: Using JavaScript, HTML, and CSS](https://www.amazon.com/Security-Web-Developers-Using-JavaScript/dp/1491928646)
