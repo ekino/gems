@@ -1,12 +1,12 @@
 # TypeScript Best Practices
 
 1. **Consistent Coding Style**:
-    - **Explanation**: Utilise un linter comme ESLint pour maintenir un style de code cohérent. 
+   - **Explanation**: Use a linter like ESLint to maintain a consistent coding style.
       - @typescript-eslint/parser
       - @typescript-eslint/eslint-plugin
       - eslint-config-airbnb-typescript
 
-    Configurer ESLint : Crée ou modifie le fichier .eslintrc.json à la racine de ton projet avec la configuration suivante :
+   Configure ESLint: Create or modify the `.eslintrc.json` file at the root of your project with the following configuration:
 
    ```json
     {
@@ -33,11 +33,10 @@
     }
     ```
 
-    Cette configuration permet de bénéficier des bonnes pratiques d’Airbnb tout en intégrant les spécificités de TypeScript1.
-
+   This configuration allows you to benefit from Airbnb's best practices while integrating TypeScript specifics.
 
 2. **Type Annotations**:
-    - **Explanation**: Provide type annotations for function arguments and return values to ensure type safety.
+   - **Explanation**: Provide type annotations for function arguments and return values to ensure type safety.
    ```typescript
    function greet(name: string): string {
      return `Hello, ${name}`;
@@ -45,7 +44,7 @@
    ```
 
 3. **Interfaces**:
-    - **Explanation**: Prefer interfaces over type aliases for defining object shapes.
+   - **Explanation**: Prefer interfaces over type aliases for defining object shapes.
    ```typescript
    interface User {
      name: string;
@@ -54,21 +53,20 @@
    ```
 
 4. **Avoid `any`**:
-    - **Explanation**: Using `any` defeats the purpose of TypeScript's type safety.
+   - **Explanation**: Using `any` defeats the purpose of TypeScript's type safety.
    ```typescript
    let data: any; // Avoid this
    let userData: User; // Prefer this
    ```
 
 5. **Strict Null Checks**:
-    - **Explanation**: Enable strict null checks to prevent null or undefined errors.
+   - **Explanation**: Enable strict null checks to prevent null or undefined errors.
    ```typescript
    let nullableString: string | null = null;
    ```
 
-
 6. **Use `readonly` for Immutability**:
-   - **Explanation**: Utilise `readonly` pour les propriétés qui ne doivent pas être modifiées après leur initialisation.
+   - **Explanation**: Use `readonly` for properties that should not be modified after initialization.
     ```typescript
     interface User {
       readonly id: number;
@@ -78,13 +76,13 @@
     ```
 
 7. **Prefer `const` over `let`**:
-   - **Explanation**: Utilise `const` pour les variables qui ne seront pas réassignées.
+   - **Explanation**: Use `const` for variables that will not be reassigned.
     ```typescript
     const userName: string = 'Alice';
     ```
 
 8. **Use Utility Types**:
-   - **Explanation**: Utilise les types utilitaires de TypeScript comme `Partial`, `Pick`, `Omit` pour manipuler les types.
+   - **Explanation**: Use TypeScript utility types like `Partial`, `Pick`, `Omit` to manipulate types.
     ```typescript
     interface User {
       name: string;
@@ -96,7 +94,7 @@
     ```
 
 9. **Avoid Magic Numbers and Strings**:
-   - **Explanation**: Définis des constantes pour les valeurs récurrentes afin de rendre le code plus lisible et maintenable.
+   - **Explanation**: Define constants for recurring values to make the code more readable and maintainable.
     ```typescript
     const MAX_USERS = 100;
 
@@ -109,19 +107,66 @@
     ```
 
 10. **Document Your Code**:
-      - **Explanation**: Utilise des commentaires JSDoc pour documenter les fonctions et les interfaces.
-        ```typescript
-        /**
-         * Greets a user by name.
-         * @param name - The name of the user.
-         * @returns A greeting message.
-         */
-        function greet(name: string): string {
-          return `Hello, ${name}`;
-        }
-        ```
+- **Explanation**: Use JSDoc comments to document functions and interfaces.
+  ```typescript
+  /**
+   * Greets a user by name.
+   * @param name - The name of the user.
+   * @returns A greeting message.
+   */
+  function greet(name: string): string {
+    return `Hello, ${name}`;
+  }
+  ```
 
-Ces ajouts devraient aider ton équipe à écrire un code plus propre, plus sûr et plus maintenable. Est-ce que tu as des questions ou des points spécifiques que tu aimerais approfondir ?
+11. **Use of Enums**:
+- **Explanation**: Use enums to represent a set of named values, improving code readability and maintainability.
+  ```typescript
+  enum UserRole {
+    Admin = 'Admin',
+    User = 'User',
+    Guest = 'Guest'
+  }
+
+   function getPermissions(role: UserRole) {
+    switch (role) {
+     case UserRole.Admin:
+     return ['read', 'write', 'delete'];
+     case UserRole.User:
+     return ['read', 'write'];
+     case UserRole.Guest:
+     return ['read'];
+    }
+   }
+    ```
+
+12. **Use of Literal Types**:
+- **Explanation**: Use literal types for simple sets of values to ensure type safety and flexibility.
+  ```typescript
+  type OrderStatus = 'Pending' | 'Shipped' | 'Delivered' | 'Cancelled';
+
+   function updateOrderStatus(orderId: number, status: OrderStatus) {
+   // Logic to update order status
+   console.log(`Order ${orderId} is now ${status}`);
+   }
+   ```
+
+13. **Use of `const` with `as const`**:
+- **Explanation**: Use `const` with `as const` to define immutable objects, ensuring that values are not accidentally modified.
+  ```typescript
+  const Config = {
+  apiUrl: 'https://api.example.com',
+  timeout: 5000,
+  retryAttempts: 3
+  } as const;
+
+   type ConfigType = typeof Config;
+   
+   function initializeApp(config: ConfigType) {
+   console.log(`Initializing app with API URL: ${config.apiUrl}`);
+   // App initialization logic
+   }
+    ```
 
 
 ## Ressources
