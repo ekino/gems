@@ -65,6 +65,15 @@ This document contains a collection of best practices for developing Angular app
 1. [Use Lint Rules](#use-lint-rules)
 1. [Use Storybook](#use-storybook)
 1. [Use Angular DevTools Chrome Extension](#use-angular-devtools-chrome-extension)
+1. [Use Dependency Injection Functions Instead of Constructors](#use-dependency-injection-functions-instead-of-constructors)
+1. [Use Standalone Components](#use-standalone-components)
+1. [Use ng-template](#use-ng-template)
+1. [Use Schematics for Migration](#use-schematics-for-migration)
+1. [Use HttpContext in Interceptor](#use-httpcontext-in-interceptor)
+1. [Use Control Flow](#use-control-flow)
+1. [Use @defer](#use-defer)
+1. [Signals API](#signals-api)
+1. [Limiting the Use of Effects in Angular](#limiting-the-use-of-effects-in-angular)
 
 ## Single Responsibility Principle
 
@@ -1097,3 +1106,235 @@ Storybook is an open source tool for building UI components and pages in isolati
 ***Why?***: By using storybook it enforces us to make better isolated components, easier to search for components that can be used for new developers in the team, great for product team to view the new UI and good documentation for the company UI design.
 
 [Storybook](https://storybook.js.org)
+
+
+## Use Dependency Injection Functions Instead of Constructors
+
+In Angular, leveraging the `inject` function instead of traditional constructor-based dependency injection is becoming a best practice. This approach offers several advantages that enhance the development experience and the quality of the codebase.
+
+- **More Accurate Types**: Angular's `inject` function offers more accurate types, enhancing code safety and robustness.
+- **Improved Compatibility**: It provides better compatibility with standard decorators, making it easier to integrate and use dependencies within components.
+- **Code Simplification**: Using `inject` makes the code more concise and readable by eliminating the need to declare dependencies in the constructor.
+- **Inheritance Benefits**: When using inheritance, the `inject` function allows subclasses to easily access dependencies without needing to call the parent constructor, simplifying the code and reducing boilerplate.
+- **Reusable Functions**: It allows moving logic to reusable functions, although this can hide dependencies within the function.
+
+**For migrating to the new syntax, use**:
+
+```bash
+ng generate @angular/core:inject
+```
+
+**Before:**
+
+```typescript
+export class AppComponent {
+  constructor(
+    @Inject(FOO) private foo: string,
+    @Optional() @Inject(BAR) private bar: string | null,
+    private http: HttpClient,
+    private todosService: TodosService
+  ) {}
+}
+```
+
+**After:**
+
+```typescript
+export class AppComponent {
+  private foo = inject(FOO);
+  private bar = inject(BAR, { optional: true });
+  private http = inject(HttpClient);
+  private todosService = inject(TodosService);
+}
+```
+
+## Use Standalone Components
+
+In Angular, standalone components provide a simplified way to build applications by reducing the need for NgModules. Here are some reasons why using standalone components is a good practice:
+
+- **Simplified Architecture**: Standalone components allow you to build Angular applications without the need for NgModules, simplifying the overall architecture
+- **Improved Modularity**: Each component can encapsulate its own functionality and dependencies, making the codebase more modular and easier to manage
+- **Enhanced Reusability**: Standalone components can be reused across different parts of the application without being tied to a specific module
+- **Better Performance**: By reducing the overhead associated with NgModules, standalone components can improve the performance of your application
+
+**To migrate an existing Angular project to standalone, use**:
+
+```bash
+ng generate @angular/core:standalone
+```
+
+```ts
+@Component({
+  selector: "app-standalone",
+  standalone: true,
+  imports: [],
+  template: `<p>Standalone component works!</p>`,
+})
+export class StandaloneComponent {}
+```
+
+## Use ng-template
+
+Using `ng-template` and `ngTemplateOutlet` is a powerful way to reuse code within the same component without creating additional components. This approach enhances code reusability, maintainability, and readability.
+
+```html
+<ng-template #myTemp>
+  <p>Repeated code</p>
+</ng-template>
+
+<div class="block1"><ng-container [ngTemplateOutlet]="myTemp" /></div>
+...
+<div class="block2"><ng-container [ngTemplateOutlet]="myTemp" /></div>
+```
+
+## Use Schematics for Migration
+
+Using schematics for migration helps ensure a smooth, efficient, and consistent update process. By automating repetitive tasks and following best practices, schematics make it easier to keep your Angular applications up-to-date with the latest features and improvements. [docs](https://angular.dev/reference/migrations)
+
+```bash
+# Migrate an existing Angular project to standalone
+ng generate @angular/core:standalone
+
+# Migration to Control Flow syntax
+ng generate @angular/core:control-flow
+
+# Migration to the inject function
+ng generate @angular/core:inject
+
+# Migration to lazy-loaded routes
+ng generate @angular/core:route-lazy-loading
+
+# Migration to signal inputs
+ng generate @angular/core:signal-input-migration
+
+# Migration to signal queries
+ng generate @angular/core:signal-queries-migration
+```
+
+## Use HttpContext in Interceptor
+
+Using `HttpContext` in interceptors allows you to manage `HTTP` requests more effectively by providing additional context that can be used to conditionally apply logic. This approach enhances the flexibility, organization, and control of your HTTP request handling in Angular applications.
+
+```ts
+// Create a new HttpContextToken
+const IS_PUBLIC_API = new HttpContextToken<boolean>(() => false);
+
+// Service
+getSomePublicData() {
+  return this.http.get(<URL>, {
+        context: new HttpContext().set(IS_PUBLIC_API, true),
+      })
+  }
+
+// Interceptor
+@Injectable()
+export class AuthInterceptor implements HttpInterceptor {
+  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    if (req.context.get(IS_PUBLIC_API)) {
+      return next.handle(req);
+    }
+  //...
+  }
+}
+```
+
+## Use Control Flow
+
+Angular 17 introduces a more declarative syntax for control flow, making it even more intuitive and closer to standard JavaScript.
+
+- **Simplicity and Readability**: New shortcuts like **@if**, **@for**, and **@switch** make coding easier and more intuitive.
+- **Performance Improvements**: Smarter loading techniques improve website speed, with pages loading more than 50% faster initially and updating 75% faster in some cases.
+
+- **Cleaner Code**: The new syntax eliminates the need for special symbols and prefixes, making your code cleaner and more maintainable.
+
+**For migrating to the new syntax, use**:
+
+```bash
+ng generate @angular/core:control-flow
+```
+
+## Use @defer
+
+In Angular, the `@defer` directive is a powerful tool introduced to improve the performance and user experience of your applications by deferring the loading of certain parts of your template.
+
+- **Performance Improvement**: By deferring the loading of heavy components, you can improve metrics like Largest Contentful Paint (LCP) and Time to First Byte (TTFB), leading to a faster initial load and better Core Web Vitals scores.
+- **Reduced Initial Bundle Size**: Only the essential parts of your application are loaded initially, which reduces the amount of JavaScript that needs to be downloaded and parsed.
+- **Improved User Experience**: Users can start interacting with the application sooner, as non-essential components are loaded in the background or when needed.
+
+```tsx
+@defer {
+  <list-movies/>
+}
+@placeholder {
+  <span>Placeholder content to display until the movies load </span>
+}
+@error {
+  <span>Loading failed</span>
+}
+@loading(minimum 1s) {
+  <span>Loading...</span>
+}
+```
+
+## Signals API
+
+Angular's Signals are designed with simplicity in mind, providing three core functions: `signal()` to create Signals,`computed()` for derived Signals, and `effect()` to handle side effects.
+
+The last one, `effect()`, stands out. While still in developer preview (unlike signal() and computed(), which became stable in v17),
+
+### Limiting the Use of Effects in Angular
+
+In Angular, while effects (`effects`) can be useful for certain tasks, it's generally recommended to limit their use. Here are some reasons why and examples to illustrate these points:
+
+**Why limit the use of effects:**
+
+- **Complexity and Maintainability**: Effects can make your code more imperative and less declarative, which goes against the reactive programming paradigm. This can lead to code that is harder to understand and maintain.
+- **Performance Issues**: Using effects for state propagation can result in performance problems such as unnecessary change detection cycles, which can slow down your application.
+- **Circular Updates**: Effects can introduce circular updates, where changes trigger further changes in a loop, leading to potential infinite loops and difficult-to-debug issues.
+- **Single Source of Truth**: By avoiding effects, you can focus on maintaining a single source of truth for your application's state. This approach simplifies state management and reduces the risk of errors.
+- **Auto-Tracking Pitfalls**: Angular's auto-tracking behavior can lead to unintended dependencies being tracked, making the codebase more error-prone and harder to reason about.
+
+**Use Cases for Effects:**
+Effects are rarely needed in most application code but can be useful in specific circumstances:
+
+- **Logging**: Logging data being displayed and when it changes, either for analytics or as a debugging tool.
+- **Syncing with localStorage**: Keeping data in sync with `window.localStorage`.
+- **Custom DOM Behavior**: Adding custom DOM behavior that can't be expressed with template syntax.
+- **Custom Rendering**: Performing custom rendering to a `<canvas>`, charting library, or other third-party UI library.
+
+**When Not to Use Effects:**
+Avoid using effects for the propagation of state changes. This can result in `ExpressionChangedAfterItHasBeenChecked` errors, infinite circular updates, or unnecessary change detection cycles.
+
+Because of these risks, Angular by default prevents you from setting signals in effects. It can be enabled if absolutely necessary by setting the `allowSignalWrites` flag when you create an effect.
+
+Instead, use computed signals to model state that depends on other state.
+
+For more details and use cases, refer to the following resources:
+
+- **Article**: [Rainer Hahnekamp - Angular’s effect(): Use Cases & Enforced Asynchrony](https://www.rainerhahnekamp.com/en/angulars-effect-enforced-asynchrony/)
+- **Video**: [Alex Rickabaugh at TechStackNation - Don't Use Effects 🚫 and What To Do Instead](https://youtu.be/aKxcIQMWSNU?si=Kn31zD8R19AWScTQ)
+
+**Examples:**
+
+- **State Propagation Example**: Using effects for state propagation can lead to issues.
+
+```ts
+const count = signal(0);
+const doubleCount = signal(0);
+effect(
+  () => {
+    doubleCount.set(count() * 2);
+  },
+  { allowSignalWrites: true }
+);
+count.set(1);
+// This will now work but use cautiously
+console.log(doubleCount()); // Outputs: 2
+```
+
+Instead, use **computed** signals to model state that depends on other state.
+
+```ts
+const count = signal(0);
+const doubleCount = computed(() => count() * 2);
+```
