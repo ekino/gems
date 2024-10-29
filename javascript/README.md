@@ -46,11 +46,18 @@ const add = (a, b) => a + b;
 In many cases, we need to create a copy of an object or an array. There are two types of cloning:
 
 - **Shallow Clone**: Creates a new object but copies the references to the original data. Changes in the new object will affect the original object. We can use `Object.assign()` or the spread operator (`...`) for shallow cloning. `map`, `filter`, and `reduce`, `concat`, `slice` are also used for shallow cloning but with some differences in behavior.
+
+  Find more information in the [mdn documentation](https://developer.mozilla.org/en-US/docs/Glossary/Deep_copy).
+
   ```javascript
   const original = { a: 1, b: { c: 2 } };
   const shallowClone = { ...original };
   ```
+
 - **Deep Clone**: Creates a new object and copies the data recursively. Changes in the new object will not affect the original object. Prefer use `structuredClone` for deep cloning, this new method is available in modern browsers.
+
+  Find more information in the [mdn documentation](https://developer.mozilla.org/en-US/docs/Glossary/Shallow_copy).
+
   ```javascript
   const original = { a: 1, b: { c: 2 } };
   const clone = structuredClone(original);
@@ -60,7 +67,7 @@ In many cases, we need to create a copy of an object or an array. There are two 
 
 **Performance Considerations**: When working with arrays, consider the performance implications of different methods and loops. Choose the appropriate approach based on the size of the dataset and the complexity of the operation.
 
-- **`map` and `filter` Methods**: Excellent for readability and functional programming, but can be slower due to the creation of new arrays. Use with caution for very large datasets.
+- **`map` and `filter` Methods**: Excellent for readability and functional programming, but can be slower due to the creation of new arrays. Use with caution for very large datasets. Find more information in the [map mdn documentation](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map).
 - **`reduce` Method**: Powerful for complex reductions but can be slower; use when the operation justifies the overhead.
 - **Classic `for` Loop**: Best for performance-critical applications, especially with large datasets.
 - **`for...of` Loop**: More readable but slightly slower; good for most use cases.
@@ -70,6 +77,8 @@ In many cases, we need to create a copy of an object or an array. There are two 
 ### 5.1. Array Methods:
 
 **Explanation**: Use array methods for readability and functional programming. Be cautious with very large datasets due to performance considerations.
+
+Find more information in the [Array mdn documentation](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array).
 
 #### 5.1.1. `map` Method
 
