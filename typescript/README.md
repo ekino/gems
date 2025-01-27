@@ -1,173 +1,171 @@
 # TypeScript Best Practices
 
-1. **Consistent Coding Style**:
-   - **Explanation**: Use a linter like ESLint to maintain a consistent coding style.
-      - @typescript-eslint/parser
-      - @typescript-eslint/eslint-plugin
-      - eslint-config-airbnb-typescript
+Think to refer to [JavaScript best practices](../javascript/README.md) before reading this document.
 
-   Configure ESLint: Create or modify the `.eslintrc.json` file at the root of your project with the following configuration:
+## Consistent Coding Style
 
-   ```json
-    {
-        "extends": [
-            "airbnb-typescript"
-        ],
-        "parser": "@typescript-eslint/parser",
-        "parserOptions": {
-            "project": "./tsconfig.json"
-        },
-        "plugins": [
-            "@typescript-eslint"
-        ],
-        "rules": {
-            "semi": ["error", "always"],
-            "quotes": ["error", "single"],
-            "no-unused-vars": "error",
-            "eqeqeq": ["error", "always"],
-            "curly": ["error", "all"],
-            "no-console": "warn",
-            "consistent-return": "error",
-            "prefer-const": "error"
-        }
-    }
-    ```
+**Explanation**: Use the linter to enforce a consistent coding style across the codebase.
 
-   This configuration allows you to benefit from Airbnb's best practices while integrating TypeScript specifics.
+- **Installation**:
 
-2. **Type Annotations**:
-   - **Explanation**: Provide type annotations for function arguments and return values to ensure type safety.
-   ```typescript
-   function greet(name: string): string {
-     return `Hello, ${name}`;
-   }
-   ```
+```bash
+pnpm add --save-dev eslint @eslint/js typescript typescript-eslint
+```
 
-3. **Interfaces**:
-   - **Explanation**: Prefer interfaces over type aliases for defining object shapes.
-   ```typescript
-   interface User {
-     name: string;
-     age: number;
-   }
-   ```
+- **Configuration eslint.config.mjs**:
 
-4. **Avoid `any`**:
-   - **Explanation**: Using `any` defeats the purpose of TypeScript's type safety.
-   ```typescript
-   let data: any; // Avoid this
-   let userData: User; // Prefer this
-   ```
+Please refer here for the configuration: https://typescript-eslint.io/getting-started
 
-5. **Strict Null Checks**:
-   - **Explanation**: Enable strict null checks to prevent null or undefined errors.
-   ```typescript
-   let nullableString: string | null = null;
-   ```
+## Type Annotations
 
-6. **Use `readonly` for Immutability**:
-   - **Explanation**: Use `readonly` for properties that should not be modified after initialization.
-    ```typescript
-    interface User {
-      readonly id: number;
-      name: string;
-      age: number;
-    }
-    ```
+- **Explanation**: Provide type annotations for function arguments and return values to ensure type safety.
 
-7. **Prefer `const` over `let`**:
-   - **Explanation**: Use `const` for variables that will not be reassigned.
-    ```typescript
-    const userName: string = 'Alice';
-    ```
+```typescript
+function greet(name: string): string {
+  return `Hello, ${name}`;
+}
+```
 
-8. **Use Utility Types**:
-   - **Explanation**: Use TypeScript utility types like `Partial`, `Pick`, `Omit` to manipulate types.
-    ```typescript
-    interface User {
-      name: string;
-      age: number;
-      email: string;
-    }
+## Types vs Interfaces
 
-    type UserWithoutEmail = Omit<User, 'email'>;
-    ```
+- **Explanation**: Use `type` for simple type definitions and `interface` when you need inheritance/extends functionality.
 
-9. **Avoid Magic Numbers and Strings**:
-   - **Explanation**: Define constants for recurring values to make the code more readable and maintainable.
-    ```typescript
-    const MAX_USERS = 100;
+```typescript
+// Simple types - use Type
+type Point = {
+  x: number;
+  y: number;
+};
 
-    function createUser(name: string): User {
-      if (users.length >= MAX_USERS) {
-        throw new Error('Max users reached');
-      }
-      // ...
-    }
-    ```
+type UserRole = "admin" | "user" | "guest";
 
-10. **Document Your Code**:
-- **Explanation**: Use JSDoc comments to document functions and interfaces.
+type ApiResponse<T> = {
+  data: T;
+  status: number;
+  message: string;
+};
+
+// When inheritance is needed - use Interface
+interface BaseEntity {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+interface User extends BaseEntity {
+  name: string;
+  email: string;
+  role: UserRole;
+}
+
+// When implementing a contract - use Interface
+interface Repository<T> {
+  find(id: string): Promise<T>;
+  save(entity: T): Promise<T>;
+  delete(id: string): Promise<void>;
+}
+```
+
+## Avoid `any` and `unknown`
+
+- **Explanation**: Avoid using `any` and `unknown` types as much as possible to ensure type safety. `any` can be assigned to any type, while `unknown` requires a type assertion to be assigned to another type.
+
+```typescript
+let data: any; // Avoid this
+let dataUser: unknown; // Prefer this over any, but avoid if possible
+let userDataUser: User = dataUser as User; // Necessary type assertion for unknown usage
+
+let userData: User; // Prefer this
+```
+
+## Strict Null Checks
+
+- **Explanation**: Enable strict null checks to prevent null or undefined errors.
+
+```typescript
+let nullableString: string | null = null;
+```
+
+## Use `readonly` for Immutability
+
+- **Explanation**: Use `readonly` for properties that should not be modified after initialization.
+
+```typescript
+interface User {
+  readonly id: number;
+  name: string;
+  age: number;
+}
+```
+
+## Use Utility Types
+
+- **Explanation**: Use TypeScript utility types like `Partial`, `Pick`, `Omit` to manipulate types.
+
+```typescript
+interface User {
+  name: string;
+  age: number;
+  email: string;
+}
+
+type UserWithoutEmail = Omit<User, "email">;
+```
+
+## Use of Enums
+
+- **Explanation**: Use enums to represent a set of named values, improving code readability and maintainability.
+
   ```typescript
-  /**
-   * Greets a user by name.
-   * @param name - The name of the user.
-   * @returns A greeting message.
-   */
-  function greet(name: string): string {
-    return `Hello, ${name}`;
+  enum UserRole {
+    Admin = "Admin",
+    User = "User",
+    Guest = "Guest",
+  }
+
+  function getPermissions(role: UserRole) {
+    switch (role) {
+      case UserRole.Admin:
+        return ["read", "write", "delete"];
+      case UserRole.User:
+        return ["read", "write"];
+      case UserRole.Guest:
+        return ["read"];
+    }
   }
   ```
 
-11. **Use of Enums**:
-- **Explanation**: Use enums to represent a set of named values, improving code readability and maintainability.
-  ```typescript
-  enum UserRole {
-    Admin = 'Admin',
-    User = 'User',
-    Guest = 'Guest'
-  }
+## Use of Literal Types
 
-   function getPermissions(role: UserRole) {
-    switch (role) {
-     case UserRole.Admin:
-     return ['read', 'write', 'delete'];
-     case UserRole.User:
-     return ['read', 'write'];
-     case UserRole.Guest:
-     return ['read'];
-    }
-   }
-    ```
-
-12. **Use of Literal Types**:
 - **Explanation**: Use literal types for simple sets of values to ensure type safety and flexibility.
+
   ```typescript
-  type OrderStatus = 'Pending' | 'Shipped' | 'Delivered' | 'Cancelled';
+  type OrderStatus = "Pending" | "Shipped" | "Delivered" | "Cancelled";
 
-   function updateOrderStatus(orderId: number, status: OrderStatus) {
-   // Logic to update order status
-   console.log(`Order ${orderId} is now ${status}`);
-   }
-   ```
+  function updateOrderStatus(orderId: number, status: OrderStatus) {
+    // Logic to update order status
+    console.log(`Order ${orderId} is now ${status}`);
+  }
+  ```
 
-13. **Use of `const` with `as const`**:
+## Use of `const` with `as const` for Immutable Objects
+
 - **Explanation**: Use `const` with `as const` to define immutable objects, ensuring that values are not accidentally modified.
+
   ```typescript
   const Config = {
-  apiUrl: 'https://api.example.com',
-  timeout: 5000,
-  retryAttempts: 3
+    apiUrl: "https://api.example.com",
+    timeout: 5000,
+    retryAttempts: 3,
   } as const;
 
-   type ConfigType = typeof Config;
-   
-   function initializeApp(config: ConfigType) {
-   console.log(`Initializing app with API URL: ${config.apiUrl}`);
-   // App initialization logic
-   }
-    ```
+  type ConfigType = typeof Config;
 
+  function initializeApp(config: ConfigType) {
+    console.log(`Initializing app with API URL: ${config.apiUrl}`);
+    // App initialization logic
+  }
+  ```
 
 ## Ressources
 
