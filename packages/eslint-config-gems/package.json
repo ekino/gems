@@ -1,0 +1,10 @@
+{
+  "name": "@ekino/eslint-config-gems",
+  "version": "0.0.1",
+  "description": "An ESLint shared configuration for Ekino's coding styles, best practices, and guidelines.",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.10.0"
+}
