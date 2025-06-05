@@ -1035,9 +1035,23 @@ In Angular, component CSS styles are encapsulated into the component's view and 
 
 ## Analyze the Bundle Size
 
-There is a great tool [webpack-bundle-analyzer](https://github.com/webpack-contrib/webpack-bundle-analyzer) that can help us to identify how much size every library consume in the final bundle.
-
 ***Why***: Knowing what library or import impact on the final bundle can help us to shrink the size of the bundle by maybe removing the library or replace it with lighter one.
+
+### For modern ESM built apps
+
+There is a great tool [esbuild-visualizer](https://github.com/btd/esbuild-visualizer) that can help us to identify how much size every library consume in the final bundle.
+
+The usage is very easy:
+
+```shell
+npm i -D esbuild-visualizer
+ng build --stats-json --named-chunks=true # Build angular with stats JSON file, and named chunks to find your way around the app
+npm run esbuild-visualizer --metadata ./dist/my-app/stats.json
+```
+
+### For legacy Webpack bundled apps
+
+Likewise, there is a similar tool for webpack bundled apps [webpack-bundle-analyzer](https://github.com/webpack-contrib/webpack-bundle-analyzer).
 
 The usage is very easy:
 
@@ -1046,6 +1060,8 @@ npm i -D webpack-bundle-analyzer
 ng build --stats-json # Build angular with stats JSON file
 webpack-bundle-analyzer dist/my-app/stats.json
 ```
+
+***Note***: Of course, if you want to optimize your bundle size, you shouldn't be using the legacy Webpack builder in the first place, as the modern esbuild builder has a much more efficient treeshaking.
 
 ## Use CSP To Prevent XSS
 
