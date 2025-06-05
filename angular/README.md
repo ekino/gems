@@ -818,7 +818,7 @@ export class SomeModule {}
   provided: 'root',
 })
 export class SomeService {
-  constructor(@Inject(TITLE_TOKEN) private readonly title: string) {}
+  title = inject(TITLE_TOKEN);
 }
 ```
 
