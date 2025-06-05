@@ -758,12 +758,12 @@ For cases where this is unavoidable, use `DomSanitizer.sanitize` method and the 
 
 ```ts
 export class SomeComponent {
+  private readonly domSanitizer:DomSanitizer = inject(DomSanitizer)
+
   content = this.domSanitizer.sanitize(
     SecurityContext.HTML,
     `<img src="" alt="" onerror="alert('You have been attacked')" />` // This data coule be come from outside API
   );
-
-  constructor(private domSanitizer: DomSanitizer) {}
 }
 ```
 
