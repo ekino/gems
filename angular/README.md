@@ -905,23 +905,88 @@ When possible, try to lazy load the modules in your Angular application. Lazy lo
 ```ts
 const routes: Routes = [
   {
-    path: '',
-    pathMatch: 'full',
+    path: 'home',
     component: HomeComponent,
   },
 ];
 ```
 
+### Exemple using standalone components
+
 **After**
 
 ```ts
+// app-routing.module.ts
+const routes: Routes = [
+  {
+    path: 'home',
+    loadChildren: () => import('./next-flight/home.component').then(m => m.HomeComponent)
+  },
+];
+```
+
+### Exemple using another routing config
+
+**After**
+
+```ts
+// app-routing.module.ts
+const routes: Routes = [
+  {
+    path: 'home',
+    loadChildren: () => import('./next-flight/home.routes').then(m => m.routes)
+  },
+];
+```
+
+```ts
+// home.routes.ts
 const routes: Routes = [
   {
     path: '',
-    pathMatch: 'full',
+    component: HomeComponent,
+  },
+];
+```
+
+### Exemple using modules
+
+**After**
+
+```ts
+// app-routing.module.ts
+const routes: Routes = [
+  {
+    path: 'home',
     loadChildren: () => import('./features/home/home.module').then(m => m.HomeModule),
   },
 ];
+```
+
+```ts
+// home-routing.module.ts
+const routes: Routes = [
+  {
+    path: 'home',
+    component: HomeComponent
+  }
+];
+
+@NgModule({
+  imports: [RouterModule.forChild(routes)],
+  exports: [RouterModule],
+})
+export class HomeRoutingModule {}
+```
+
+```ts
+// home.module.ts
+@NgModule({
+  imports: [
+    HomeRoutingModule,
+  ],
+})
+export class HomeModule {}
 ```
 
 ## Use index.ts
