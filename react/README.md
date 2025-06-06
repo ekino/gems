@@ -5,12 +5,13 @@
 - [Think in React](https://react.dev/learn/thinking-in-react)
 - Use only Function Components, [no more Class Component](https://react.dev/reference/react/Component#alternatives)
 - Use custom hooks instead of HOC, replace withFoo by useFoo
+- Follow the [Rules of Hooks](https://react.dev/reference/rules/rules-of-hooks)
 - Use composition
 - Use slots
 - Use "as" prop to override an `Element`
 - Seperate the smart and dumb component
 - Keep state as local as possible.
-- Derive state, don't sync state, (you might not need an effect)[https://react.dev/learn/you-might-not-need-an-effect]
+- Derive state, don't sync state, [you might not need an effect](https://react.dev/learn/you-might-not-need-an-effect)
 - Prefer state enums instead of booleans
 - Use Storybook to code your components in isolation and enforce the separation of concern design pattern
 - Use React Testing Library for testing your components and mimic users effects
@@ -43,6 +44,7 @@ State Machine :
 
 Deprecated :
 
+- [Redux Toolkit (RTK)](https://redux-toolkit.js.org/introduction/why-rtk-is-redux-today) – Still actively maintained and officially recommended for Redux. However, we don't recommend it for new projects due to simpler alternatives like Zustand or Jotai.
 - Redux & redux-saga
 
 ## Hooks
