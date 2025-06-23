@@ -10,6 +10,7 @@ This document contains a collection of best practices for developing Angular app
 1. [Keep Up to Date](#keep-up-to-date)
 1. [Strict Mode](#strict-mode)
 1. [Use Angular CLI](#use-angular-cli)
+1. [Use Angular with ESBuild](#use-angular-with-esbuild)
 1. [Use State Management](#use-state-management)
 1. [Use Environment Variables](#use-environment-variables)
 1. [Divide Imports](#divide-imports)
@@ -149,6 +150,17 @@ npm i -g @angular/cli
 # Check Angular CLI version
 ng version
 ```
+
+## Use Angular with ESBuild
+
+Modern angular applications are built into ESM modules through the `"builder": "@angular-devkit/build-angular:application"` or the `"builder": "@angular-devkit/build-angular:browser-esbuild"` configuration in `angular.json`. Legacy applications may still be using the older and less performant webpack builder, `"builder": "@angular-devkit/build-angular:browser"`.
+
+`@angular-devkit/build-angular:application` is the default builder when you initiate an new application, it allows for SSR/SSG builds aswell as SPA.
+`@angular-devkit/build-angular:browser-esbuild` is the same with the SSR/SSG capability stripped down.
+
+On legacy apps, favor migrating to the new ESBuild architecture, there are straightforward benefits of doing so, such as faster build times, compile time static analysis and smaller bundle sizes through improved tree-shaking, including the ability to treeshake libraries.
+
+[More info on the migration process is available here](https://angular.dev/tools/cli/build-system-migration).
 
 ## Use State Management
 
@@ -1172,6 +1184,8 @@ ng generate @angular/core:standalone
 })
 export class StandaloneComponent {}
 ```
+
+
 
 ## Use ng-template
 
