@@ -1,326 +1,618 @@
 # JavaScript Best Practices
 
-To ensure clarity, readability, and maintainability in our project, it is crucial to follow consistent coding conventions. Below are the recommended practices for JavaScript with specific naming conventions.
+This guide focuses on **Ekino-specific patterns and conventions** that go beyond standard JavaScript best practices. Rather than duplicating widely available online guides, we highlight the specific approaches and patterns that our teams have found most effective.
 
-1. [Use `const` and `let`](#1-use-const-and-let)
-2. [Strict Mode](#2-strict-mode)
-3. [Function Expressions](#3-function-expressions)
-4. [Shallow Clone and Deep Clone](#4-shallow-clone-and-deep-clone)
-5. [Array Method and loop](#5-array-method-and-loop)
-6. [Conditional Statements](#6-conditional-statements)
-7. [Naming Conventions](#7-naming-conventions)
-8. [Avoid Global Variables](#8-avoid-global-variables)
-9. [Comments and JSDoc](#9-comments-and-jsdoc)
+## Table of Contents
 
-## 1. Use `const` and `let`:
+1. [Mapping Logic: Dictionaries over Switch Statements](#1-mapping-logic-dictionaries-over-switch-statements)
+2. [Pure Functions and Side Effects](#2-pure-functions-and-side-effects)
+3. [Explicit Boolean Naming](#3-explicit-boolean-naming)
+4. [Descriptive Function Names](#4-descriptive-function-names)
+5. [Event Handler Conventions](#5-event-handler-conventions)
+6. [Error Handling Patterns](#6-error-handling-patterns)
+7. [Object and Array Destructuring](#7-object-and-array-destructuring)
+8. [Async/Await Patterns](#8-asyncawait-patterns)
 
-**Explanation**: `const` is for values that do not change, and `let` is for variables that can be reassigned. Avoid `var` to prevent scope issues.
+## 1. Mapping Logic: Dictionaries over Switch Statements
 
-```javascript
-const MAX_USERS = 100; // constant value
-let userName = "John"; // variable value
-```
+At Ekino, we prefer using object dictionaries for simple mappings instead of switch statements. This approach is more maintainable, easier to test, and follows functional programming principles.
 
-## 2. Strict Mode:
-
-**Explanation**: Enabling strict mode helps catch common coding errors and "unsafe" actions such as defining global variables.
+### ❌ DON'T: Use switch for simple mapping
 
 ```javascript
-"use strict";
-function myFunction() {
-  // code
+function getStatusLabel(status) {
+  switch (status) {
+    case "active":
+      return "Active";
+    case "inactive":
+      return "Inactive";
+    case "pending":
+      return "Pending";
+    default:
+      return "Unknown";
+  }
+}
+
+function getStatusColor(status) {
+  switch (status) {
+    case "active":
+      return "#28a745";
+    case "inactive":
+      return "#dc3545";
+    case "pending":
+      return "#ffc107";
+    default:
+      return "#6c757d";
+  }
 }
 ```
 
-## 3. Function Expressions:
-
-**Explanation**: Use arrow functions for shorter syntax and lexical `this` binding.
+### ✅ DO: Use dictionaries for clarity and maintainability
 
 ```javascript
-const add = (a, b) => a + b;
+const STATUS_LABELS = {
+  active: "Active",
+  inactive: "Inactive",
+  pending: "Pending",
+};
+
+const STATUS_COLORS = {
+  active: "#28a745",
+  inactive: "#dc3545",
+  pending: "#ffc107",
+};
+
+function getStatusLabel(status) {
+  return STATUS_LABELS[status] ?? "Unknown";
+}
+
+function getStatusColor(status) {
+  return STATUS_COLORS[status] ?? "#6c757d";
+}
+
+// Even better: Create a comprehensive status configuration
+const STATUS_CONFIG = {
+  active: { label: "Active", color: "#28a745", icon: "✓" },
+  inactive: { label: "Inactive", color: "#dc3545", icon: "✗" },
+  pending: { label: "Pending", color: "#ffc107", icon: "⏳" },
+};
+
+function getStatusInfo(status) {
+  return (
+    STATUS_CONFIG[status] ?? {
+      label: "Unknown",
+      color: "#6c757d",
+      icon: "?",
+    }
+  );
+}
 ```
 
-## 4. Shallow Clone and Deep Clone:
+**Benefits:**
 
-**Explanation**:
-In many cases, we need to create a copy of an object or an array. There are two types of cloning:
+- Easier to test and mock
+- Better performance for large mappings
+- More functional and declarative
+- Easier to extend and maintain
 
-- **Shallow Clone**: Creates a new object but copies the references to the original data. Changes in the new object will affect the original object. We can use `Object.assign()` or the spread operator (`...`) for shallow cloning. `map`, `filter`, and `reduce`, `concat`, `slice` are also used for shallow cloning but with some differences in behavior.
+## 2. Pure Functions and Side Effects
 
-  Find more information in the [mdn documentation](https://developer.mozilla.org/en-US/docs/Glossary/Deep_copy).
+We strongly emphasize writing pure functions to improve testability, predictability, and debugging capabilities.
 
-  ```javascript
-  const original = { a: 1, b: { c: 2 } };
-  const shallowClone = { ...original };
-  ```
+### ❌ DON'T: Create impure functions with side effects
 
-- **Deep Clone**: Creates a new object and copies the data recursively. Changes in the new object will not affect the original object. Prefer use `structuredClone` for deep cloning, this new method is available in modern browsers.
+```javascript
+let userCount = 0;
+let notifications = [];
 
-  Find more information in the [mdn documentation](https://developer.mozilla.org/en-US/docs/Glossary/Shallow_copy).
+function incrementAndNotify(userName) {
+  userCount++; // Modifies external state
+  notifications.push(`User ${userName} added`); // Side effect
+  console.log(`Total users: ${userCount}`); // Side effect
+  return userCount;
+}
 
-  ```javascript
-  const original = { a: 1, b: { c: 2 } };
-  const clone = structuredClone(original);
-  ```
-
-## 5. Array Method and loop:
-
-**Performance Considerations**: When working with arrays, consider the performance implications of different methods and loops. Choose the appropriate approach based on the size of the dataset and the complexity of the operation.
-
-- **`map` and `filter` Methods**: Excellent for readability and functional programming, but can be slower due to the creation of new arrays. Use with caution for very large datasets. Find more information in the [map mdn documentation](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map).
-- **`reduce` Method**: Powerful for complex reductions but can be slower; use when the operation justifies the overhead.
-- **Classic `for` Loop**: Best for performance-critical applications, especially with large datasets.
-- **`for...of` Loop**: More readable but slightly slower; good for most use cases.
-- **`forEach` Method**: Convenient but slower due to function call overhead; avoid for very large datasets.
-- **`while` and `do...while` Loops**: Useful for unknown iterations but can be error-prone if not managed carefully.
-
-### 5.1. Array Methods:
-
-**Explanation**: Use array methods for readability and functional programming. Be cautious with very large datasets due to performance considerations.
-
-Find more information in the [Array mdn documentation](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array).
-
-#### 5.1.1. `map` Method
-
-- **Usage**: For transforming each element of an array and returning a new array of the same length.
-- **Performance**: Slower than `for` loops for very large arrays due to the creation of a new array.
-- **Example**:
-  ```javascript
-  const numbers = [1, 2, 3, 4];
-  const doubled = numbers.map((num) => num * 2);
-  console.log(doubled); // [2, 4, 6, 8]
-  ```
-
-#### 5.1.2. `filter` Method
-
-- **Usage**: For creating a new array containing only the elements that pass a specific test.
-- **Performance**: Similar to `map`, slower for very large arrays due to the creation of a new array.
-- **Example**:
-  ```javascript
-  const numbers = [1, 2, 3, 4, 5];
-  const evenNumbers = numbers.filter((num) => num % 2 === 0);
-  console.log(evenNumbers); // [2, 4]
-  ```
-
-#### 5.1.3. `reduce` Method
-
-- **Usage**: For accumulating the values of an array into a single value (e.g., sum, product).
-- **Performance**: Can be slower due to the complexity of the operation, but very powerful for reducing data.
-- **Example**:
-  ```javascript
-  const numbers = [1, 2, 3, 4];
-  const sum = numbers.reduce((acc, num) => acc + num, 0);
-  console.log(sum); // 10
-  ```
-
-### 5.2. Loop Method:
-
-**Explanation**: Use classic `for` loops for performance-critical applications and `for...of` loops for readability. Avoid `forEach` for very large datasets.
-
-#### 5.2.1. Classic `for` Loop
-
-- **Usage**: For simple iterations over arrays or numeric sequences.
-- **Performance**: Generally the fastest for large datasets due to minimal overhead.
-- **Example**:
-  ```javascript
-  for (let i = 0; i < array.length; i++) {
-    console.log(array[i]);
-  }
-  ```
-
-#### 5.2.2. `for...of` Loop
-
-- **Usage**: For iterating directly over the elements of an array or any iterable object.
-- **Performance**: Slightly slower than the classic `for` loop but more readable.
-- **Example**:
-  ```javascript
-  for (const element of array) {
-    console.log(element);
-  }
-  ```
-
-#### 5.2.3. `forEach` Method
-
-- **Usage**: To apply a function to each element of an array. Note that `forEach` cannot be interrupted with `break` or `continue`.
-- **Performance**: Generally slower than `for` and `for...of` loops due to function call overhead. So use it for a small amount of data.
-- **Example**:
-  ```javascript
-  array.forEach((element) => {
-    console.log(element);
+function processUsers(users) {
+  users.forEach((user) => {
+    user.processed = true; // Mutates input
+    user.timestamp = Date.now(); // Non-deterministic
   });
-  ```
+  return users;
+}
+```
 
-#### 5.2.4. `while` and `do...while` Loops
+### ✅ DO: Write pure functions that return new values
 
-- **Usage**: For loops where the number of iterations is not known in advance.
-- **Performance**: Similar to the classic `for` loop, but can be more error-prone if not carefully managed.
-- **Example**:
-  ```javascript
-  let i = 0;
-  while (i < 10) {
-    console.log(i);
-    i++;
+```javascript
+function incrementUserCount(currentCount) {
+  return currentCount + 1;
+}
+
+function createNotification(userName) {
+  return `User ${userName} added`;
+}
+
+function addNotification(notifications, newNotification) {
+  return [...notifications, newNotification];
+}
+
+function processUsers(users, timestamp = Date.now()) {
+  return users.map((user) => ({
+    ...user,
+    processed: true,
+    timestamp,
+  }));
+}
+
+// Usage with explicit state management
+function handleUserAddition(state, userName) {
+  const newCount = incrementUserCount(state.userCount);
+  const notification = createNotification(userName);
+  const newNotifications = addNotification(state.notifications, notification);
+
+  return {
+    ...state,
+    userCount: newCount,
+    notifications: newNotifications,
+  };
+}
+```
+
+**Benefits:**
+
+- Easier to test (no mocking required)
+- More predictable behavior
+- Better for debugging and reasoning
+- Enables better caching and optimization
+
+## 3. Explicit Boolean Naming
+
+We use explicit, positive naming for boolean variables to avoid confusion and double negatives.
+
+### ❌ DON'T: Use ambiguous or negative boolean naming
+
+```javascript
+const notAvailable = !isDataLoaded;
+const disabled = true;
+const hidden = false;
+const invalid = !isValid;
+
+// Confusing double negatives
+if (!notAvailable) {
+  // What does this mean exactly?
+}
+
+// Unclear intent
+if (!disabled) {
+  processData();
+}
+```
+
+### ✅ DO: Use explicit and positive naming
+
+```javascript
+const isDataAvailable = isDataLoaded;
+const isEnabled = true;
+const isVisible = true;
+const isValid = checkValidation();
+
+// Clear and readable
+if (isDataAvailable) {
+  displayData();
+}
+
+if (isEnabled) {
+  processData();
+}
+
+// For complex conditions, use descriptive names
+const canUserEdit = isAuthenticated && hasPermission && !isReadOnlyMode;
+const shouldShowModal = isFirstVisit && !hasSeenTutorial;
+```
+
+**Preferred Prefixes:**
+
+- `is` - for state: `isLoading`, `isActive`, `isValid`
+- `has` - for possession: `hasPermission`, `hasData`, `hasError`
+- `can` - for ability: `canEdit`, `canDelete`, `canAccess`
+- `should` - for conditions: `shouldUpdate`, `shouldRender`, `shouldClose`
+- `will` - for future actions: `willRedirect`, `willExpire`
+
+## 4. Descriptive Function Names
+
+Function names should clearly describe what the function does using action verbs.
+
+### ❌ DON'T: Use vague or unclear function names
+
+```javascript
+function process(data) {
+  // What kind of processing?
+  return data.filter((item) => item.active);
+}
+
+function handle() {
+  // Handle what?
+  updateUI();
+  sendAnalytics();
+}
+
+function check(input) {
+  // Check for what?
+  return input.length > 0 && input.includes("@");
+}
+
+function get(id) {
+  // Get what? From where?
+  return database.find(id);
+}
+```
+
+### ✅ DO: Use descriptive verbs that clarify the action
+
+```javascript
+function filterActiveItems(data) {
+  return data.filter((item) => item.active);
+}
+
+function handleUserSubmission() {
+  updateUI();
+  sendAnalytics();
+}
+
+function validateEmailFormat(input) {
+  return input.length > 0 && input.includes("@");
+}
+
+function fetchUserById(id) {
+  return database.find(id);
+}
+
+// More specific examples
+function transformApiResponse(response) {
+  return response.data.map(normalizeUser);
+}
+
+function calculateTotalPrice(items, taxRate) {
+  const subtotal = items.reduce((sum, item) => sum + item.price, 0);
+  return subtotal * (1 + taxRate);
+}
+
+function generateUniqueId() {
+  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+}
+```
+
+**Recommended Verb Patterns:**
+
+- `validate` - for validation: `validateEmail`, `validateForm`
+- `transform` - for data transformation: `transformData`, `transformResponse`
+- `calculate` - for computations: `calculateTotal`, `calculateDiscount`
+- `generate` - for creation: `generateId`, `generateReport`
+- `format` - for formatting: `formatDate`, `formatCurrency`
+- `fetch` - for data retrieval: `fetchUser`, `fetchSettings`
+- `parse` - for parsing: `parseJson`, `parseUrl`
+- `serialize` - for serialization: `serializeForm`, `serializeData`
+
+## 5. Event Handler Conventions
+
+At Ekino, we follow specific naming conventions for event handlers to improve code readability and maintainability.
+
+### ❌ DON'T: Use inconsistent or unclear event handler names
+
+```javascript
+// Inconsistent prefixes
+function clickHandler() {}
+function mouseOverEvent() {}
+function submitFunction() {}
+
+// Unclear what triggers the handler
+function userAction() {}
+function process() {}
+function handler() {}
+
+// Missing context
+function validate() {}
+function update() {}
+```
+
+### ✅ DO: Use consistent "on" prefix and descriptive names
+
+```javascript
+// Consistent "on" prefix pattern
+function onButtonClick() {}
+function onFormSubmit() {}
+function onInputChange() {}
+function onModalClose() {}
+
+// Include context when needed
+function onUserProfileUpdate() {}
+function onEmailValidation() {}
+function onPaymentSuccess() {}
+function onFileUploadError() {}
+
+// For React components
+const UserForm = () => {
+  const onEmailChange = (event) => {
+    setEmail(event.target.value);
+  };
+
+  const onFormSubmit = (event) => {
+    event.preventDefault();
+    validateAndSubmit();
+  };
+
+  return (
+    <form onSubmit={onFormSubmit}>
+      <input type="email" onChange={onEmailChange} />
+    </form>
+  );
+};
+```
+
+## 6. Error Handling Patterns
+
+We prefer explicit error handling patterns that make errors visible and manageable.
+
+### ❌ DON'T: Hide errors or use unclear error handling
+
+```javascript
+function fetchUserData(id) {
+  try {
+    const response = fetch(`/api/users/${id}`);
+    return response.json();
+  } catch (error) {
+    return null; // Error is hidden
   }
-  ```
+}
 
-#### 5.2.5. Using `break` and `continue` if there are specific conditions:
+function processData(data) {
+  if (data) {
+    data.forEach((item) => {
+      try {
+        processItem(item);
+      } catch (e) {
+        // Silent failure
+      }
+    });
+  }
+}
+```
 
-- **Usage**: Use `break` to exit a loop early and `continue` to skip the current iteration and proceed to the next one.
-- **Example**:
-  ```javascript
-  for (let i = 0; i < 10; i++) {
-    if (i === 5) {
-      break; // Exit the loop when i is 5
+### ✅ DO: Make errors explicit and provide meaningful error information
+
+```javascript
+// Return Result pattern
+function fetchUserData(id) {
+  try {
+    const response = fetch(`/api/users/${id}`);
+    const data = response.json();
+    return { success: true, data, error: null };
+  } catch (error) {
+    return {
+      success: false,
+      data: null,
+      error: {
+        message: error.message,
+        code: "FETCH_ERROR",
+        timestamp: new Date().toISOString(),
+      },
+    };
+  }
+}
+
+// Usage with explicit error handling
+async function handleUserLoad(userId) {
+  const result = await fetchUserData(userId);
+
+  if (!result.success) {
+    console.error("Failed to load user:", result.error);
+    showErrorMessage("Unable to load user data");
+    return;
+  }
+
+  displayUserData(result.data);
+}
+
+// For batch processing, collect errors
+function processDataItems(items) {
+  const results = [];
+  const errors = [];
+
+  items.forEach((item, index) => {
+    try {
+      const result = processItem(item);
+      results.push(result);
+    } catch (error) {
+      errors.push({
+        index,
+        item,
+        error: error.message,
+      });
     }
-    if (i % 2 === 0) {
-      continue; // Skip even numbers
+  });
+
+  return { results, errors };
+}
+```
+
+## 7. Object and Array Destructuring
+
+We use destructuring to make code more readable and reduce repetition.
+
+### ❌ DON'T: Access nested properties repeatedly
+
+```javascript
+function displayUser(user) {
+  console.log(user.profile.name);
+  console.log(user.profile.email);
+  console.log(user.settings.theme);
+  console.log(user.settings.notifications.email);
+
+  if (user.profile.name && user.profile.email) {
+    sendWelcomeEmail(user.profile.email, user.profile.name);
+  }
+}
+
+function processApiResponse(response) {
+  const data = response.data;
+  const status = response.status;
+  const headers = response.headers;
+
+  if (status === 200) {
+    return data;
+  }
+}
+```
+
+### ✅ DO: Use destructuring for cleaner, more readable code
+
+```javascript
+function displayUser(user) {
+  const {
+    profile: { name, email },
+    settings: {
+      theme,
+      notifications: { email: emailNotifications },
+    },
+  } = user;
+
+  console.log(name);
+  console.log(email);
+  console.log(theme);
+  console.log(emailNotifications);
+
+  if (name && email) {
+    sendWelcomeEmail(email, name);
+  }
+}
+
+// With default values
+function processApiResponse(response) {
+  const { data = [], status = 500, headers = {} } = response;
+
+  if (status === 200) {
+    return data;
+  }
+
+  throw new Error(`API Error: ${status}`);
+}
+
+// Array destructuring for multiple return values
+function parseUserInput(input) {
+  const parts = input.split("@");
+  const [username, domain = "default.com"] = parts;
+
+  return { username, domain };
+}
+
+// Destructuring in function parameters
+function createUserCard({ name, email, role = "user", isActive = true }) {
+  return {
+    displayName: name,
+    contactEmail: email,
+    userRole: role,
+    status: isActive ? "active" : "inactive",
+  };
+}
+```
+
+## 8. Async/Await Patterns
+
+We prefer async/await over promises for better readability and error handling.
+
+### ❌ DON'T: Use complex promise chains
+
+```javascript
+function loadUserDashboard(userId) {
+  return fetchUser(userId)
+    .then((user) => {
+      return fetchUserPosts(user.id).then((posts) => {
+        return fetchUserSettings(user.id).then((settings) => {
+          return {
+            user,
+            posts,
+            settings,
+          };
+        });
+      });
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+      throw error;
+    });
+}
+```
+
+### ✅ DO: Use async/await with proper error handling
+
+```javascript
+async function loadUserDashboard(userId) {
+  try {
+    const user = await fetchUser(userId);
+
+    // Parallel requests when possible
+    const [posts, settings] = await Promise.all([
+      fetchUserPosts(user.id),
+      fetchUserSettings(user.id),
+    ]);
+
+    return { user, posts, settings };
+  } catch (error) {
+    console.error("Failed to load user dashboard:", error);
+    throw new Error(`Dashboard load failed: ${error.message}`);
+  }
+}
+
+// Sequential when order matters
+async function processUserOnboarding(userData) {
+  try {
+    const user = await createUser(userData);
+    const profile = await createUserProfile(user.id, userData.profile);
+    const preferences = await setUserPreferences(user.id, userData.preferences);
+
+    await sendWelcomeEmail(user.email);
+
+    return { user, profile, preferences };
+  } catch (error) {
+    // Cleanup on failure
+    if (user?.id) {
+      await cleanupUser(user.id);
     }
-    console.log(i);
+    throw error;
   }
-  ```
-
-## 6. Conditional Statements:
-
-### 6.1. `if...else` Statements:
-
-Use `if...else` for simple and clear conditional logic.
-
-```javascript
-if (condition) {
-  // code if the condition is true
-} else {
-  // code if the condition is false
 }
-```
 
-### 6.2. Ternary Operator:
+// Timeout pattern for better UX
+async function fetchWithTimeout(url, timeoutMs = 5000) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
-Use the ternary operator for concise conditional assignments.
-
-```javascript
-const result = condition ? "true" : "false";
-```
-
-### 6.3. `switch` Statements:
-
-Use `switch` for multiple conditions based on a single variable. This can be more readable than multiple `if...else if` statements.
-
-```javascript
-switch (value) {
-  case 1:
-    // code for case 1
-    break;
-  case 2:
-    // code for case 2
-    break;
-  default:
-  // default code
-}
-```
-
-### 6.4. Short-Circuit Evaluation:
-
-Use logical operators for short-circuit evaluation to write concise and efficient conditions.
-
-```javascript
-const value = someCondition && "defaultValue";
-const value = someCondition || "defaultValue";
-```
-
-### 6.5. Avoiding Nested Conditions:
-
-Avoid deeply nested conditions by using guard clauses or returning early from functions.
-
-```javascript
-function example(value) {
-  if (!value) {
-    return "No value";
-  }
-  // code if value is truthy
-}
-```
-
-### 6.6. Using `===` for Comparison:
-
-Always use `===` instead of `==` for comparison to avoid type coercion issues.
-
-```javascript
-if (value === 10) {
-  // code if value is exactly 10
-}
-```
-
-## 6. Naming Conventions:
-
-Consistency in naming improves code readability and maintainability.
-
-### 6.1. Variables/Functions: camelCase
-
-```javascript
-let userAge = 25;
-function getUserAge() {
-  return userAge;
-}
-```
-
-### 6.1.Boolean: camelCase with "is" and "has"
-
-```javascript
-var hasOwner = true;
-var isTrained = false;
-var hasVaccinations = true;
-```
-
-### 6.1. Classes/Components: PascalCase
-
-```javascript
-class UserProfile {
-  constructor(name) {
-    this.name = name;
+  try {
+    const response = await fetch(url, {
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    return response;
+  } catch (error) {
+    clearTimeout(timeoutId);
+    if (error.name === "AbortError") {
+      throw new Error("Request timeout");
+    }
+    throw error;
   }
 }
 ```
 
-### 6.1. Const: UPPER_SNAKE_CASE (uppercase letters with underscores between words).
+---
 
-```javascript
-const DAYS_IN_WEEK = 7;
-const MONTHS_IN_YEAR = 12;
-const MAX_DOG_WEIGHT = 150;
-```
+## Why These Patterns Matter at Ekino
 
-### 6.1. files: lowercase (lowercase letters with - between words).
+These patterns reflect our commitment to:
 
-```javascript
-dog - cartoon.js;
-dog - breed - information.js;
-```
+- **Maintainability**: Code that's easy to modify and extend
+- **Readability**: Clear intent that new team members can understand
+- **Testability**: Patterns that facilitate unit and integration testing
+- **Performance**: Efficient patterns that scale with our applications
+- **Consistency**: Shared conventions across all our JavaScript projects
 
-## 7. Avoid Global Variables:
-
-- Minimize the use of global variables to prevent memory leaks and conflicts. Scope variables as tightly as possible.
-- Example:
-  ```javascript
-  (function () {
-    const localVariable = "I am local";
-    console.log(localVariable);
-  })();
-  ```
-
-## 8. Comments and JSDoc:
-
-Use comments to explain complex code, logic, or algorithms.
-Follow the JSDoc standard for documenting functions, classes, and variables.
-
-```javascript
-/**
- * Represents a user.
- * @constructor
- * @param {string} name - The user's name.
- * @param {number} age - The user's age.
- */
-function User(name, age) {
-  this.name = name;
-  this.age = age;
-}
-```
+For questions about these patterns or suggestions for improvements, please reach out to the frontend team leads.
