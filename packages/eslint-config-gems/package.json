@@ -1,0 +1,18 @@
+{
+  "name": "@ekino/eslint-config-gems",
+  "version": "0.0.1",
+  "description": "An ESLint shared configuration for Ekino's coding styles, best practices, and guidelines.",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.10.0",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.31.0",
+    "@typescript-eslint/parser": "^8.31.0",
+    "eslint-plugin-jsdoc": "^50.6.11",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0"
+  }
+}
