@@ -1173,6 +1173,94 @@ ng generate @angular/core:standalone
 export class StandaloneComponent {}
 ```
 
+## Use Functions over Clases
+
+As Angular progressively migrates to an API based on **function composition** instead of **classes instantiation**, many of angular utilites are reimplemented as a function in addition to a class. 
+
+The reason for this migration is that classes are not treeshakable. It is also worth noting that the new functions are run within a stack frame that runs in an injection context, meaning that we have more flexibility using the `inject()` function to inject dependencies than in their class based counterparts.
+
+Use functions over classes where applicable.
+
+### Exemple for Resolvers
+
+***Before***
+
+```ts
+@Injectable({
+  providedIn: 'root'
+})
+export class UserResolver implements Resolve<unknown> {
+  private readonly myService = inject(MyService);
+  resolve(route, state): Observable<User> {
+    return myService.getData();
+  }
+}
+```
+
+***After***
+
+```ts
+const resolver: ResolveFn<unknown> = (route, state) => {
+  return inject(MyService).getData();
+};
+```
+
+### Exemple for Interceptors
+
+***Before***
+
+```ts
+@Injectable()
+export class LoggingInterceptor implements HttpInterceptor {
+  
+  constructor() {}
+
+  intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+    console.log(req.url);
+    return next.handle(req);
+  }
+}
+```
+
+***After***
+
+```ts
+export function loggingInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {
+  console.log(req.url);
+  return next(req);
+}
+```
+
+### Exemple for Guards
+
+***Before***
+
+```ts
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthGuard implements CanActivate {
+  private readonly authService = inject(AuthService)
+  
+  constructor() {}
+
+  canActivate(): boolean {
+    return authService.hasAccess() ? true : false;
+  }
+}
+```
+
+***After***
+
+```ts
+export function authGuard(): CanActivateFn {
+  return () => {
+    const authService: AuthService = inject(AuthService);
+    return authService.hasAccess() ? true : false;
+  };
+}
+```
+
 ## Use ng-template
 
 Using `ng-template` and `ngTemplateOutlet` is a powerful way to reuse code within the same component without creating additional components. This approach enhances code reusability, maintainability, and readability.
