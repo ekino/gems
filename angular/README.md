@@ -991,6 +991,15 @@ Most providers in angular are designed to act on a global scope. They are then p
 export class NavbarComponent {}
 ```
 
+Additionally, it is possible to entirely disable the singleton behavior at the injectable level using `providedIn: null` instead of `providedIn: 'root'`.
+
+```ts
+@Injectable({
+  providedIn: null,
+})
+export class NavbarService {}
+```
+
 Providers are `tree-shakable`, the Angular compiler removes the associated services from the final output when it determines that our application doesn't use those services. It also minimizes the risk of dead code and reduces the size of our bundles.
 
 ## Avoid Risky Angular APIs
