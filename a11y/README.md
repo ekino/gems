@@ -8,7 +8,7 @@ Accessibility (often abbreviated as a11y) ensures that digital products are usab
 
 ### 1. Use Semantic HTML
 
-Using the right HTML elements for their intended purpose provides built-in accessibility benefits.
+Semantic HTML elements have built-in behaviors and mechanics that favor accessibility, ease of use, and readability by screen readers. Use semantic HTML elements whenever possible. When a native element cannot be used, refer to [ARIA Design Patterns](https://www.w3.org/WAI/ARIA/apg/patterns/) to ensure that built-in behaviors are added back to custom elements.
 
 ```html
 <!-- ❌ Avoid -->
@@ -22,7 +22,9 @@ Using the right HTML elements for their intended purpose provides built-in acces
 
 ### 2. Proper Form Elements and Labels
 
-Always associate labels with form controls using the `for` attribute or by nesting the input inside the label.
+Every form element (input, checkbox, radio, select) must have a label, even if hidden. Always associate labels with form controls using the `for` attribute or by nesting the input inside the label.
+
+> **Note:** A `placeholder` is never a sufficient replacement for a `<label>`: it may not be read by screen readers and disappears when the input is focused.
 
 ```html
 <!-- ❌ Avoid -->
@@ -79,7 +81,7 @@ Use the `autocomplete` attribute to help users fill in forms.
 
 ### 3. Descriptive Link Text
 
-Links should make sense when read out of context.
+Links should make sense when read out of context. If a link or button is visually represented by an icon or image only, it must have an accessible label via `aria-label` or visually hidden text.
 
 ```html
 <!-- ❌ Avoid -->
@@ -87,6 +89,12 @@ Links should make sense when read out of context.
 
 <!-- ✅ Prefer -->
 <a href="pricing.html">View our pricing plans</a>
+
+<!-- ❌ Avoid: icon-only button without label -->
+<button><svg>...</svg></button>
+
+<!-- ✅ Prefer: icon button with accessible label -->
+<button aria-label="Close menu"><svg>...</svg></button>
 ```
 
 **WCAG Reference**: [2.4.4 Link Purpose (In Context) (Level A)](https://www.w3.org/WAI/WCAG21/Understanding/link-purpose-in-context)
@@ -116,7 +124,7 @@ Provide meaningful alt text for images that convey information.
 
 ### 5. Keyboard Accessibility
 
-Ensure all interactive elements are accessible via keyboard.
+Ensure all interactive elements are reachable via keyboard and receive a visible focus (`outline` CSS property). Interactive elements include links, buttons, and form elements. Also, each state triggered by mouse should also trigger on focus: a button with a hover state should display the same state on focus, a submenu that opens on hover should also open on focus.
 
 ```html
 <!-- ❌ Avoid: using divs for interactive elements -->
@@ -174,7 +182,7 @@ Ensure sufficient contrast between text and background colors.
 
 ### 7. Responsive Design for Zoom
 
-Ensure your UI works when users zoom up to 200%.
+Ensure your UI works when users zoom up to 200%. Avoid setting fixed (`px`) sizes on container elements.
 
 ```css
 /* ✅ Prefer */
@@ -217,19 +225,45 @@ Always declare the page language and use a proper DOCTYPE.
 
 **WCAG Reference**: [3.1.1 Language of Page (Level A)](https://www.w3.org/WAI/WCAG21/Understanding/language-of-page)
 
-#### Proper Heading Structure
+#### Landmark Elements
 
-Use headings to create a logical document outline.
+Page structure matters. Using correct landmark elements helps screen reader users navigate within a page. A page should have a single `<main>` element, at least one `<header>` element (secondary headers should be within sectioning elements), and navigation should be wrapped in `<nav>` elements.
 
 ```html
-<!-- ❌ Avoid: skipping levels -->
+<!-- ❌ Avoid -->
+<div class="header">...</div>
+<div class="nav">...</div>
+<div class="content">...</div>
+<div class="footer">...</div>
+
+<!-- ✅ Prefer -->
+<header>
+  <nav>...</nav>
+</header>
+<main>
+  <section>...</section>
+  <section>...</section>
+</main>
+<footer>...</footer>
+```
+
+#### Proper Heading Structure
+
+Use headings to create a logical document outline. A page should have at least one `<h1>` element (multiple `<h1>` are allowed). Semantic headings create a hierarchy of content; while skipping levels is not strictly forbidden, the heading structure should reflect a correct content hierarchy.
+
+```html
+<!-- ❌ Avoid: incorrect hierarchy -->
 <h1>Website Title</h1>
-<h3>First Section</h3> <!-- Skipped h2 -->
+<h2>First Section</h2>
+<h2>Second Section</h2>
+<h3>Third Section</h3> <!-- Appears as child of Second Section -->
 
 <!-- ✅ Prefer -->
 <h1>Website Title</h1>
 <h2>First Section</h2>
-<h3>Subsection</h3>
+<h2>Second Section</h2>
+<h2>Third Section</h2>
+<h3>Subsection of Third</h3>
 ```
 
 #### Skip Links
@@ -269,7 +303,11 @@ Provide a skip link to allow keyboard users to bypass navigation.
 
 ### 9. ARIA Attributes (When Necessary)
 
-Only use ARIA when HTML semantics aren't sufficient.
+Only use ARIA when HTML semantics aren't sufficient or when a native element cannot be used. Be aware that misusing ARIA can cause accessibility errors.
+
+ARIA should enhance accessibility features. Native HTML elements don't need ARIA attributes as they have everything built-in. However, ARIA is necessary for custom components when native elements don't provide the required flexibility. Refer to [ARIA Design Patterns](https://www.w3.org/WAI/ARIA/apg/patterns/) for implementation guidance.
+
+> **Note:** Some ARIA attributes like `aria-selected` or `aria-expanded` must be updated dynamically via JavaScript.
 
 ```html
 <!-- ❌ Avoid: unnecessary ARIA -->
@@ -318,6 +356,26 @@ Respect user preferences for reduced motion.
 
 **WCAG Reference**: [2.3.3 Animation from Interactions (Level AAA)](https://www.w3.org/WAI/WCAG21/Understanding/animation-from-interactions)
 
+### 11. Use Lists
+
+List elements represent a logical grouping of items and are announced as lists by screen readers, providing context to users. Use `<ul>` for unordered lists, `<ol>` for ordered lists, and `<dl>` for definition lists. Lists must follow a strict structure.
+
+```html
+<!-- ❌ Avoid: invalid list structure -->
+<ul>
+  <p>Content</p>
+</ul>
+
+<!-- ✅ Prefer -->
+<ul>
+  <li>
+    <p>Content</p>
+  </li>
+</ul>
+```
+
+**WCAG Reference**: [1.3.1 Info and Relationships (Level A)](https://www.w3.org/WAI/WCAG21/Understanding/info-and-relationships)
+
 ## Mobile and Touch Device Considerations
 
 ### 1. Touch Target Sizes
@@ -337,7 +395,7 @@ button, .clickable, a {
 
 ### 2. Gesture Alternatives
 
-Provide alternatives for complex gestures.
+Provide alternatives for complex gestures requiring 3 or more touch points (e.g., pinch-to-zoom on a map).
 
 ```javascript
 // ✅ Prefer: Supporting both gestures and buttons
@@ -739,6 +797,8 @@ module.exports = {
 - [Lighthouse DevTools](https://developer.chrome.com/docs/lighthouse) - Built into Chrome DevTools
 - [WAVE](https://wave.webaim.org/extension/) - Web accessibility evaluation tool
 - [Accessibility Insights](https://accessibilityinsights.io/) - Microsoft's accessibility testing tools
+
+> **Tip:** Browser DevTools now display the **Accessibility Tree**, which shows what screen readers will read from a page. This is useful for checking page structure and element accessibility.
 
 ### Screen Readers for Testing
 
