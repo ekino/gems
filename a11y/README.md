@@ -797,6 +797,8 @@ module.exports = {
 - [Lighthouse DevTools](https://developer.chrome.com/docs/lighthouse) - Built into Chrome DevTools
 - [WAVE](https://wave.webaim.org/extension/) - Web accessibility evaluation tool
 - [Accessibility Insights](https://accessibilityinsights.io/) - Microsoft's accessibility testing tools
+- [Color Contrast Check](https://chromewebstore.google.com/detail/wcag-color-contrast-check/plnahcmalebffmaghcpcmpaciebdhgdf) - WCAG color contrast checker
+- [HeadingsMap](https://chromewebstore.google.com/detail/headingsmap/flbjommegcjonpdmenkdiocclhjacmbi) - Visualize heading structure
 
 > **Tip:** Browser DevTools now display the **Accessibility Tree**, which shows what screen readers will read from a page. This is useful for checking page structure and element accessibility.
 
