@@ -28,8 +28,8 @@ indent_size = 2
 [*.{css,scss,less}]
 indent_size = 2
 
-# JavaScript, TypeScript, JSX, TSX
-[*.{js,jsx,ts,tsx}]
+# JavaScript, TypeScript, JSX, TSX (including ESM and CJS modules)
+[*.{js,jsx,ts,tsx,mjs,cjs}]
 indent_size = 2
 
 # JSON files
