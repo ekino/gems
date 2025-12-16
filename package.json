@@ -1,0 +1,6 @@
+{
+  "name": "gems",
+  "description": "Coding styles, best practices, and guidelines followed at Ekino",
+  "license": "MIT",
+  "packageManager": "pnpm@10.10.0"
+}
