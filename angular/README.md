@@ -1023,7 +1023,9 @@ Usage of third-party libraries should be avoided and should be as final destinat
 
 If you decided to use third-party library try to explain to the team why it was chosen and why it can not be done with Angular built-in libraries, it will make good conversation with the team and maybe could lead to better solutions.
 
-***Why***: Angular comes with a great set of built-in libraries such as routing, forms, HTTP Client, testing and many more. When deciding to add third-party library the bundle size will become bigger and that resulting to slower performance. 
+***Why***: Angular comes with a great set of built-in libraries such as routing, forms, HTTP Client, testing and many more. When deciding to add third-party library the bundle size will become bigger and that resulting to slower performance.
+
+Should you use external libraries, favor using libraries that are published as **ESM** modules (as opposed to CJS, AMD and UMD). ESM is the javascript standard. Other module systems cause treeshaking bailouts on build. 
 
 ## Base Component Classes
 
