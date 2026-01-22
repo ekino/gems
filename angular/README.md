@@ -22,7 +22,7 @@ This document contains a collection of best practices for developing Angular app
 1. [Wrap Pipes Within Parenthesis](#wrap-pipes-within-parenthesis)
 1. [Avoid Logic in Templates](#avoid-logic-in-templates)
 1. [Prevent Memory Leaks](#prevent-memory-leaks)
-1. [Subscribe in Template Using async Pipe](#subscribe-in-template-using-async-pipe)
+1. [Interpolate in Template Using Signals](#interpolate-in-template-using-signals)
 1. [Use Change Detection OnPush](#use-change-detection-onpush)
 1. [Avoid Having Subscriptions Inside Subscriptions](#avoid-having-subscriptions-inside-subscriptions)
 1. [Use trackBy Along With ngFor](#use-trackby-along-with-ngfor)
@@ -474,11 +474,11 @@ this.movieService.getList()
   });
 ```
 
-## Subscribe in Template Using async Pipe
+## Interpolate in Template Using Signals
 
-Avoid subscribing to observables from components and instead subscribe to the observables from the template.
+Avoid subscribing to observables from components and avoid using async pipe in favor of signals. Favor using signals for template interpolation as they have a low level implementation in the renderer and offer much greater performance than `async` pipe.
 
-***Why?***: `async` pipe unsubscribe automatically, and it makes the code simpler by eliminating the need to manually manage subscriptions. It also reduces the risk of accidentally forgetting to unsubscribe a subscription in the component, which would cause a memory leak. This risk can also be mitigated by using a lint rule to detect unsubscribed observables.
+Angular provides interoperability utilities such as `toSignal(obs:Observable<unknown>):Signal<unknown | undefined>`and `toObservable(sig:Signal<unknown>):Observable<unknown>` to turn observables into signals and vice versa. `toSignal()` handles the unsubscription on destruction.
 
 **Before**
 
@@ -490,7 +490,7 @@ Avoid subscribing to observables from components and instead subscribe to the ob
 textToDisplay = '';
 
 ngOnInit(): void {
-  this.textSubscriotion = this.textService
+  this.textSubscription = this.textService
     .pipe(
       map(value => value.item),
     )
@@ -498,11 +498,24 @@ ngOnInit(): void {
 }
 
 ngOnDestroy(): void {
-  if (this.textSubscriotion) {
-    this.textSubscriotion.unsubscribe();
+  if (this.textSubscription) {
+    this.textSubscription.unsubscribe();
   }
 }
 ```
+
+**After**
+
+```html
+<p>{{ textToDisplay() }}</p>
+```
+
+```ts
+textToDisplay$: Observable<string> = this.textService.pipe(map(value => value.item));
+textToDisplay: Signal<string | undefined> = toSignal(this.textToDisplay$);
+```
+
+If unable to use signals fall back on using `async` pipe to handle the subscription.
 
 **After**
 
